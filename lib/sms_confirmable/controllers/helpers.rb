@@ -33,6 +33,13 @@ module SmsConfirmable
         send "#{scope}_confirm_phone_number_path"
       end
 
+      def sign_out_and_redirect_with_opts(resource_or_scope, opts={})
+        scope = Devise::Mapping.find_scope!(resource_or_scope)
+        redirect_path = after_sign_out_path_for(scope)
+        Devise.sign_out_all_scopes ? sign_out : sign_out(scope)
+        redirect_to(redirect_path, opts)
+      end
+
     end
   end
 end

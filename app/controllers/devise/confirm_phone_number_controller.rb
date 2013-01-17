@@ -1,6 +1,6 @@
 class Devise::ConfirmPhoneNumberController < DeviseController
   prepend_before_filter :fetch_resource
-  before_filter :check_max_attempts, :handle_sms_confirmation
+  before_filter :handle_sms_confirmation
 
   def show
   end
@@ -13,10 +13,9 @@ class Devise::ConfirmPhoneNumberController < DeviseController
       flash[:notice] = "Your phone number was confirmed successfully"
     else
       if resource.exceeded_max_confirmation_attempts?
-        flash[:notice] = "Exceeded max confirmation attempts. Account locked"
-        sign_out_and_redirect resource
+        sign_out_and_redirect_with_opts(resource, alert: "You have exceeded the maximum number of confirmation attempts, and your account has bene locked. Contact an administrator to unlock.")
       else
-        flash[:notice] = "That code was incorrect, try again"
+        flash[:error] = "That code was incorrect, please try again"
         render :show
       end
     end
