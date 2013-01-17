@@ -8,6 +8,9 @@ module Devise
   mattr_accessor :confirmation_code_length
   @@confirmation_code_length = 6
 
+  mattr_accessor :confirmation_code_includes_lowercase
+  @@confirmation_code_includes_lowercase = false
+
   mattr_accessor :max_confirmation_attempts
   @@max_confirmation_attempts = 3
 end

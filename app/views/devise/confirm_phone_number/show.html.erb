@@ -1,9 +1,9 @@
-<h2>Enter your confirmation code.</h2>
-
+<h2>Confirm your phone number</h2>
+<p>A code has been texted to your phone. Enter it here to confirm your account</p>
 <%= form_tag([resource_name, :confirm_phone_number], :method => :post) do %>
-  <%= text_field_tag :code %>
+  <%= text_field_tag :code %></br>
   <%= submit_tag "Submit" %>
 <% end %>
 
-<%= link_to "Send a new code", :action => "new" %>
+<%= link_to "Send a new code", :action => "new" %></br>
 <%= link_to "Sign out", destroy_user_session_path, :method => :delete %>

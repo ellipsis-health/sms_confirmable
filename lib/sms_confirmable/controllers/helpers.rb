@@ -13,13 +13,13 @@ module SmsConfirmable
         unless devise_controller?
           Devise.mappings.keys.flatten.any? do |scope|
             if signed_in? scope and not current_user.confirmed?
-              handle_failed_sms_confirmation scope
+              redirect_to_sms_confirmation scope
             end
           end
         end
       end
 
-      def handle_failed_sms_confirmation scope
+      def redirect_to_sms_confirmation scope
         if request.format.present? and request.format.html?
           session["#{scope}_return_to"] = request.path if request.get?
           redirect_to sms_confirmation_path_for scope

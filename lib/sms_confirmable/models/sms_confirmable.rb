@@ -4,7 +4,8 @@ module Devise
       extend ActiveSupport::Concern
 
       module ClassMethods
-        ::Devise::Models.config(self,:confirmation_code_length,:max_confirmation_attempts)
+        ::Devise::Models.config(self,:confirmation_code_length,:max_confirmation_attempts, 
+                                     :confirmation_code_includes_lowercase)
       end
 
       included do
@@ -78,6 +79,7 @@ module Devise
 
       def generate_sms_confirmation_code
         chars = ('0'..'9').to_a + ('A'..'Z').to_a
+        chars += ('a'..'z').to_a if self.class.confirmation_code_includes_lowercase
         code = (0..self.class.confirmation_code_length).map { 
           chars[SecureRandom.random_number(chars.length)] 
         }.join

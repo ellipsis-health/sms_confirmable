@@ -17,7 +17,7 @@ module SmsConfirmable
     end
 
     def confirmation_attempts
-      apply_devise_schema :confirmation_attempts, Integer, :default => 0
+      apply_devise_schema :sms_confirmation_attempts, Integer, :default => 0
     end
 
   end
