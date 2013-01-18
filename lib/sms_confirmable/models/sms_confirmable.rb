@@ -13,8 +13,8 @@ module Devise
       end
 
       def self.required_fields klass
-        required_methods = [:sms_confirmation_code, :sms_confirmation_salt, :confirmed_at, 
-                            :confirmation_sent_at, :sms_confirmation_attempts]
+        required_methods = [:sms_confirmation_hash, :phone_confirmed_at, 
+                            :sms_confirmation_sent_at, :sms_confirmation_attempts]
       end
 
       def attempt_confirmation! code
@@ -29,18 +29,17 @@ module Devise
       end
       
       def confirm!
-        self.sms_confirmation_code = nil
-        self.sms_confirmation_salt = nil
-        self.confirmed_at = DateTime.now.utc
+        self.sms_confirmation_hash = nil
+        self.phone_confirmed_at = DateTime.now.utc
         save(validate: false)
       end
 
       def confirmed?
-        !!self.confirmed_at
+        !!self.phone_confirmed_at
       end
 
       def exceeded_max_confirmation_attempts?
-        self.sms_confirmation_attempts >= self.class.max_confirmation_attempts
+        !confirmed? && self.sms_confirmation_attempts >= self.class.max_confirmation_attempts
       end
 
       # Generates a confirmation code and sends it
@@ -50,7 +49,7 @@ module Devise
       def send_confirmation_instructions!
         code = generate_sms_confirmation_code
         send_message "Your confirmation code is #{code}."
-        self.confirmation_sent_at = DateTime.now.utc
+        self.sms_confirmation_sent_at = DateTime.now.utc
         save(validate: false)
       end
 
@@ -80,12 +79,11 @@ module Devise
       def generate_sms_confirmation_code
         chars = ('0'..'9').to_a + ('A'..'Z').to_a
         chars += ('a'..'z').to_a if self.class.confirmation_code_includes_lowercase
-        code = (0..self.class.confirmation_code_length).map { 
+        code = (0...self.class.confirmation_code_length).map { 
           chars[SecureRandom.random_number(chars.length)] 
         }.join
         salt = SCrypt::Engine.generate_salt(salt_size: 32)
-        self.sms_confirmation_code = SCrypt::Engine.hash_secret(code, salt)
-        self.sms_confirmation_salt = salt
+        self.sms_confirmation_hash = SCrypt::Engine.hash_secret(code, salt)
         code
       end
 
@@ -96,10 +94,14 @@ module Devise
       end
 
       def code_is_correct? code
-        return false if self.sms_confirmation_salt.nil? or self.sms_confirmation_code.nil?
-        self.sms_confirmation_code == SCrypt::Engine.hash_secret(code, self.sms_confirmation_salt)
+        return false if self.sms_confirmation_hash.nil?
+        self.sms_confirmation_hash == SCrypt::Engine.hash_secret(code, self.sms_confirmation_salt)
       end
-      
+
+      def sms_confirmation_salt
+        self.sms_confirmation_hash.split('$')[0..-2].join('$')
+      end
+
     end
   end
 end
