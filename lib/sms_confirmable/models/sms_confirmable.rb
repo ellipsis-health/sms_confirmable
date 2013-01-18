@@ -79,6 +79,7 @@ module Devise
       def generate_sms_confirmation_code
         chars = ('0'..'9').to_a + ('A'..'Z').to_a
         chars += ('a'..'z').to_a if self.class.confirmation_code_includes_lowercase
+        chars.delete '0' ; chars.delete 'O' ; chars.delete 'o'
         code = (0...self.class.confirmation_code_length).map { 
           chars[SecureRandom.random_number(chars.length)] 
         }.join
