@@ -9,9 +9,9 @@ Gem::Specification.new do |s|
   s.version     = SmsConfirmable::VERSION
   s.authors     = ["Dieterich Lawson"]
   s.email       = ["dieterich.lawson@gmail.com"]
-  s.homepage    = "TODO"
-  s.summary     = "TODO: Summary of SmsConfirmable."
-  s.description = "TODO: Description of SmsConfirmable."
+  s.homepage    = "https://github.com/dieterichlawson/sms_confirmable"
+  s.summary     = "Summary of SmsConfirmable."
+  s.description = "Description of SmsConfirmable."
 
   s.files = Dir["{app,config,db,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.md"]
   s.test_files = Dir["test/**/*"]
