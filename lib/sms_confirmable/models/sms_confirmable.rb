@@ -10,6 +10,7 @@ module Devise
 
       included do
         after_create :send_confirmation_instructions!, :if => :confirmation_required?
+        attr_reader :sms_confirmation_hash
       end
 
       def self.required_fields klass
