@@ -10,7 +10,7 @@ module Devise
 
       included do
         after_create :send_confirmation_instructions!, :if => :confirmation_required?
-        attr_reader :sms_confirmation_hash
+#        attr_reader :sms_confirmation_hash
       end
 
       def self.required_fields klass
@@ -85,7 +85,7 @@ module Devise
           chars[SecureRandom.random_number(chars.length)] 
         }.join
         salt = SCrypt::Engine.generate_salt(salt_size: 32)
-        @sms_confirmation_hash = SCrypt::Engine.hash_secret(code, salt)
+        self.sms_confirmation_hash = SCrypt::Engine.hash_secret(code, salt)
         code
       end
 
