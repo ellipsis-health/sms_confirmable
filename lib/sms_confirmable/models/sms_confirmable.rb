@@ -10,12 +10,13 @@ module Devise
 
       included do
         after_create :send_confirmation_instructions!, :if => :confirmation_required?
-#        attr_reader :sms_confirmation_hash
+        attr_reader :sms_confirmation_hash
+        attr_accessor :phone_confirmed_at, :sms_confirmation_sent_at, :sms_confirmation_attempts
       end
 
       def self.required_fields klass
-        required_methods = [:sms_confirmation_hash, :phone_confirmed_at, 
-                            :sms_confirmation_sent_at, :sms_confirmation_attempts]
+        [:sms_confirmation_hash, :phone_confirmed_at, 
+         :sms_confirmation_sent_at, :sms_confirmation_attempts]
       end
 
       def attempt_confirmation! code
