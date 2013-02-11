@@ -4,20 +4,17 @@ module Devise
       extend ActiveSupport::Concern
 
       module ClassMethods
-        ::Devise::Models.config(self,:confirmation_code_length,:max_confirmation_attempts, 
-                                     :confirmation_code_includes_lowercase)
+        ::Devise::Models.config(self, :confirmation_code_length,:max_confirmation_attempts, 
+                                      :confirmation_code_includes_lowercase)
       end
 
       included do
-        after_create :send_confirmation_instructions!, :if => :confirmation_required?
-        attr_reader :sms_confirmation_hash
-        attr_accessor :phone_confirmed_at, :sms_confirmation_sent_at, :sms_confirmation_attempts
+        before_create :send_confirmation_instructions, :if => :confirmation_required?
       end
 
       def self.required_fields klass
-#        [:sms_confirmation_hash, :phone_confirmed_at, 
- #        :sms_confirmation_sent_at, :sms_confirmation_attempts]
-        []
+        [:sms_confirmation_hash, :phone_confirmed_at, 
+         :sms_confirmation_sent_at, :sms_confirmation_attempts]
       end
 
       def attempt_confirmation! code
@@ -49,10 +46,14 @@ module Devise
       # to the user's phone number. The code must be regenerated
       # every time this is called because only a digest of the code is
       # stored in the database.
-      def send_confirmation_instructions!
+      def send_confirmation_instructions
         code = generate_sms_confirmation_code
         send_message "Your confirmation code is #{code}."
         self.sms_confirmation_sent_at = DateTime.now.utc
+      end
+
+      def send_confirmation_instructions!
+        send_confirmation_instructions
         save(validate: false)
       end
 
@@ -98,14 +99,13 @@ module Devise
       end
 
       def code_is_correct? code
-        return false if self.sms_confirmation_hash.nil?
-        self.sms_confirmation_hash == SCrypt::Engine.hash_secret(code, self.sms_confirmation_salt)
+        return false unless sms_confirmation_hash
+        sms_confirmation_hash == SCrypt::Engine.hash_secret(code, self.sms_confirmation_salt)
       end
 
       def sms_confirmation_salt
-        self.sms_confirmation_hash.split('$')[0..-2].join('$')
+        sms_confirmation_hash.split('$')[0..-2].join('$') if sms_confirmation_hash
       end
-
     end
   end
 end
