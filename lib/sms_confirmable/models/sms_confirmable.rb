@@ -15,8 +15,9 @@ module Devise
       end
 
       def self.required_fields klass
-        [:sms_confirmation_hash, :phone_confirmed_at, 
-         :sms_confirmation_sent_at, :sms_confirmation_attempts]
+#        [:sms_confirmation_hash, :phone_confirmed_at, 
+ #        :sms_confirmation_sent_at, :sms_confirmation_attempts]
+        []
       end
 
       def attempt_confirmation! code
