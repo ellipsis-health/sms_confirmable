@@ -85,7 +85,7 @@ module Devise
           chars[SecureRandom.random_number(chars.length)] 
         }.join
         salt = SCrypt::Engine.generate_salt(salt_size: 32)
-        self.sms_confirmation_hash = SCrypt::Engine.hash_secret(code, salt)
+        @sms_confirmation_hash = SCrypt::Engine.hash_secret(code, salt)
         code
       end
 
